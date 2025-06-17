@@ -5,11 +5,19 @@ require('dotenv').config();
 
 const app = express();
 
-// Middleware
+// CORS configuration
 app.use(cors({
-  origin: '*',
-  credentials: true
+  origin: ['http://localhost:5173', 'https://code-mon-nine.vercel.app'],
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
+  exposedHeaders: ['Content-Range', 'X-Content-Range'],
+  maxAge: 86400 // 24 hours
 }));
+
+// Handle preflight requests
+app.options('*', cors());
+
 app.use(express.json());
 
 // Connect to MongoDB
