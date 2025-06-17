@@ -50,7 +50,7 @@ function LoginSignup() {
         await Swal.fire({
           icon: 'success',
           title: 'Successfully Signed Up!',
-          text: 'Your account has been created. Welcome to Crack the Code!',
+          text: 'Your account has been created. Welcome to Code Mon!',
           timer: 2000,
           showConfirmButton: false,
           allowOutsideClick: false,
@@ -148,7 +148,7 @@ function LoginSignup() {
           <input className='sub-btn' type="submit" value="Submit" />
         </div>
       </form>
-      <div className='old_user' onClick={navigate_to_login} >New to <span className='old_user_hai_kya'  > Crack the Code ?  </span> <span className='go_to_login'> Login</span> </div>
+      <div className='old_user' onClick={navigate_to_login} >New to <span className='old_user_hai_kya'  > Code Mon ?  </span> <span className='go_to_login'> Login</span> </div>
     </div>
   );
 }

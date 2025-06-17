@@ -4,7 +4,7 @@ const Problem = require('../models/Problem');
 const auth = require('../middleware/auth');
 
 // Get all problems
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   try {
     const problems = await Problem.find()
       .select('-testCases')
@@ -16,7 +16,7 @@ router.get('/', async (req, res) => {
 });
 
 // Get a single problem
-router.get('/:id', async (req, res) => {
+router.get('/:id', auth, async (req, res) => {
   try {
     const problem = await Problem.findById(req.params.id)
       .populate('createdBy', 'username');

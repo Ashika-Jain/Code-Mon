@@ -1,141 +1,167 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
-import swal from 'sweetalert';
-import axios from 'axios';
+import React, { useState } from 'react';
+import { useNavigate, useLocation } from 'react-router-dom';
+import axiosInstance from './utils/axiosConfig';
 import './LoginSignup.css';
 
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5001';
 
-function SLoginSignup() {
-  const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [emailError, setEmailError] = useState('');
-  const [passwordError, setPasswordError] = useState('');
-  const navigate = useNavigate();
+const SLoginSignup = () => {
+    const [email, setEmail] = useState('');
+    const [password, setPassword] = useState('');
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const navigate = useNavigate();
+    const location = useLocation();
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setEmailError('');
-    setPasswordError('');
+    console.log('Login Component: Current location state:', location.state);
 
-    if (!email) {
-      setEmailError('Email is required');
-      return;
-    }
-    if (!password) {
-      setPasswordError('Password is required');
-      return;
-    }
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        setError('');
+        setLoading(true);
 
-    try {
-      console.log('Starting login process...');
-      console.log('API URL:', `${API_BASE_URL}/api/auth/login`);
-      
-      const response = await axios.post(`${API_BASE_URL}/api/auth/login`, {
-        email,
-        password,
-      }, {
-        withCredentials: true,
-        headers: {
-          'Content-Type': 'application/json'
+        try {
+            console.log('=== Login Process Start ===');
+            console.log('1. Current location state:', location.state);
+            console.log('2. API URL:', `${API_BASE_URL}/api/auth/login`);
+            console.log('3. Request payload:', { email, password: '***' });
+
+            const response = await axiosInstance.post(
+                `${API_BASE_URL}/api/auth/login`,
+                { email, password },
+                {
+                    withCredentials: true,
+                    headers: {
+                        'Content-Type': 'application/json'
+                    }
+                }
+            );
+
+            console.log('4. Login Response:', {
+                status: response.status,
+                data: response.data,
+                headers: response.headers
+            });
+
+            if (response.data.token) {
+                console.log('5. Token received, storing auth data');
+                
+                // Store token in localStorage
+                localStorage.setItem('jwt', response.data.token);
+                localStorage.setItem('user', JSON.stringify(response.data.user));
+                console.log('6. Stored in localStorage:', {
+                    jwt: localStorage.getItem('jwt') ? 'Present' : 'Not present',
+                    user: localStorage.getItem('user') ? 'Present' : 'Not present'
+                });
+
+                // Set cookie for cross-domain requests
+                document.cookie = `jwt=${response.data.token}; path=/; max-age=86400; SameSite=Strict`;
+                console.log('7. Current cookies:', document.cookie);
+
+                // Get the redirect path
+                const from = location.state?.from || '/problems';
+                console.log('8. Redirecting to:', from);
+                
+                // Small delay to ensure storage is complete
+                setTimeout(() => {
+                    navigate(from, { replace: true });
+                }, 100);
+            } else {
+                console.log('5. No token in response');
+                setError('Login failed. Please try again.');
+            }
+        } catch (err) {
+            console.error('=== Login Error ===');
+            console.error('1. Error details:', {
+                status: err.response?.status,
+                data: err.response?.data,
+                message: err.message,
+                config: err.config
+            });
+            setError(err.response?.data?.message || 'Login failed. Please try again.');
+        } finally {
+            setLoading(false);
         }
-      });
+    };
 
-      console.log('Login response received:', response.data);
+    const navigate_to_signup = () => {
+        console.log('Navigating to signup page');
+        navigate('/signup');
+    };
 
-      if (response.data.token) {
-        console.log('Token received, storing in localStorage and cookie');
-        
-        // Store token in localStorage
-        localStorage.setItem('jwt', response.data.token);
-        localStorage.setItem('user', JSON.stringify(response.data.user));
-        
-        // Set cookie for cross-domain requests
-        document.cookie = `jwt=${response.data.token}; path=/; secure; sameSite=None`;
-        
-        console.log('Stored token in localStorage:', localStorage.getItem('jwt'));
-        console.log('Stored user in localStorage:', localStorage.getItem('user'));
-        console.log('Current cookies:', document.cookie);
-        
-        await swal({
-          title: 'Success!',
-          text: 'Login successful!',
-          icon: 'success',
-          button: 'OK',
-        });
-        
-        console.log('Attempting navigation to /problems');
-        // Use navigate with replace to prevent back button issues
-        navigate('/problems', { replace: true });
-      } else {
-        console.log('No token in response');
-        swal({
-          title: 'Error!',
-          text: 'Login failed. Please try again.',
-          icon: 'error',
-          button: 'OK',
-        });
-      }
-    } catch (error) {
-      console.error('Login error:', error);
-      console.error('Error details:', {
-        status: error.response?.status,
-        data: error.response?.data,
-        message: error.message,
-        config: error.config
-      });
-      
-      swal({
-        title: 'Error!',
-        text: error.response?.data?.message || 'Login failed. Please try again.',
-        icon: 'error',
-        button: 'OK',
-      });
-    }
-  };
+    return (
+        <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
+            <div className="max-w-md w-full space-y-8">
+                <div>
+                    <h2 className="mt-6 text-center text-3xl font-extrabold text-gray-900">
+                        Sign in to your account
+                    </h2>
+                </div>
+                <form className="mt-8 space-y-6" onSubmit={handleSubmit}>
+                    <div className="rounded-md shadow-sm -space-y-px">
+                        <div>
+                            <label htmlFor="email" className="sr-only">Email address</label>
+                            <input
+                                id="email"
+                                name="email"
+                                type="email"
+                                required
+                                value={email}
+                                onChange={(e) => setEmail(e.target.value)}
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="Email address"
+                            />
+                        </div>
+                        <div>
+                            <label htmlFor="password" className="sr-only">Password</label>
+                            <input
+                                id="password"
+                                name="password"
+                                type="password"
+                                required
+                                value={password}
+                                onChange={(e) => setPassword(e.target.value)}
+                                className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
+                                placeholder="Password"
+                            />
+                        </div>
+                    </div>
 
-  function navigate_to_signup() {
-    console.log('Navigating to signup page');
-    navigate('/signup');
-  }
+                    {error && (
+                        <div className="text-red-500 text-sm text-center">
+                            {error}
+                        </div>
+                    )}
 
-  return (
-    <div className='auth-wrapper2'>
-      <h1 className='log_title'>Login</h1>
-      <form onSubmit={handleSubmit}>
-        <div className="container-auth-login">
-          <label className='auth-label'>Email Id:</label>
-          <input
-            className='entry-auth'
-            type="email"
-            onChange={(e) => setEmail(e.target.value)}
-            placeholder="Enter your email"
-            value={email}
-            required
-          />
-          <div className="email error">{emailError}</div>
-          <br />
+                    <div>
+                        <button
+                            type="submit"
+                            disabled={loading}
+                            className={`group relative w-full flex justify-center py-2 px-4 border border-transparent text-sm font-medium rounded-md text-white ${
+                                loading
+                                    ? 'bg-blue-400 cursor-not-allowed'
+                                    : 'bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500'
+                            }`}
+                        >
+                            {loading ? 'Signing in...' : 'Sign in'}
+                        </button>
+                    </div>
+                </form>
 
-          <label className='auth-label'>Password:</label>
-          <input
-            className='entry-auth'
-            type="password"
-            onChange={(e) => setPassword(e.target.value)}
-            placeholder="Enter your password"
-            value={password}
-            required
-          />
-          <div className="password error">{passwordError}</div>
-          <br />
-          <input className='sub-btn' type="submit" value="Submit" />
+                <div className="text-center">
+                    <p className="text-sm text-gray-600">
+                        Don&apos;t have an account?{' '}
+                        <button
+                            onClick={navigate_to_signup}
+                            className="font-medium text-blue-600 hover:text-blue-500"
+                        >
+                            Sign up
+                        </button>
+                    </p>
+                </div>
+            </div>
         </div>
-      </form>
-      <div className='new_user' onClick={navigate_to_signup}>
-        New to <span className='new_user_hai_kya'>Crack the Code?</span>
-        <span className='go_to_signup'>Signup</span>
-      </div>
-    </div>
-  );
-}
+    );
+};
 
 export default SLoginSignup;

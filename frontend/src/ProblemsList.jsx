@@ -7,8 +7,9 @@ import { useNavigate } from "react-router-dom";
 import User_img from "./assets/user.png";
 import ShowSingleP from "./ShowSingleP";
 import axiosInstance from "./utils/axiosConfig";
+import { Link } from 'react-router-dom';
 
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "http://localhost:5001";
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5001';
 Chart.register(ArcElement);
 
 const ProblemsList = () => {
@@ -32,6 +33,75 @@ const ProblemsList = () => {
   const calculateWidth = (solved, total) => {
     return total === 0 ? "0%" : `${(solved / total) * 100}%`;
   };
+
+  useEffect(() => {
+    let isMounted = true;
+
+    const verifyAndFetchProblems = async () => {
+      try {
+        console.log('=== ProblemsList: Starting Authentication Check ===');
+        const token = localStorage.getItem('jwt');
+        
+        if (!token) {
+          console.log('ProblemsList: No token found, redirecting to login');
+          navigate('/login', { replace: true });
+          return;
+        }
+
+        // First verify the token
+        console.log('ProblemsList: Verifying token');
+        const verifyResponse = await axiosInstance.get(`${API_BASE_URL}/api/auth/verify`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (!verifyResponse.data.valid) {
+          console.log('ProblemsList: Token invalid, redirecting to login');
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
+          document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+          navigate('/login', { replace: true });
+          return;
+        }
+
+        console.log('ProblemsList: Token valid, fetching problems');
+        const response = await axiosInstance.get(`${API_BASE_URL}/api/problems`, {
+          headers: {
+            'Authorization': `Bearer ${token}`
+          }
+        });
+
+        if (isMounted) {
+          console.log('ProblemsList: Received problems data:', response.data);
+          setProblems(response.data);
+          setLoading(false);
+        }
+      } catch (error) {
+        console.error('ProblemsList: Error:', error);
+        if (isMounted) {
+          if (error.response?.status === 401) {
+            console.log('ProblemsList: Unauthorized, redirecting to login');
+            localStorage.removeItem('jwt');
+            localStorage.removeItem('user');
+            document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
+            navigate('/login', { replace: true });
+          } else {
+            setError(error.response?.data?.message || 'Failed to fetch problems');
+            setLoading(false);
+          }
+        }
+      }
+    };
+
+    verifyAndFetchProblems();
+
+    return () => {
+      isMounted = false;
+    };
+  }, [navigate]);
 
   useEffect(() => {
     const get_by_tag = async () => {
@@ -106,11 +176,22 @@ const ProblemsList = () => {
   }, []);
 
   if (loading) {
-    return <div className="flex justify-center items-center h-screen">Loading...</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-blue-500"></div>
+      </div>
+    );
   }
 
   if (error) {
-    return <div className="text-red-500 text-center mt-4">{error}</div>;
+    return (
+      <div className="flex justify-center items-center h-screen">
+        <div className="text-red-500 text-center">
+          <h2 className="text-2xl font-bold mb-4">Error</h2>
+          <p>{error}</p>
+        </div>
+      </div>
+    );
   }
 
   const data = {
@@ -152,25 +233,28 @@ const ProblemsList = () => {
                 </button>
                 Top Coding Questions
               </div>
-              <div className="heading_image">
-                <img src="https://img.freepik.com/free-vector/man-shows-gesture-great-idea_10045-637.jpg?t=st=1718393335~exp=1718396935~hmac=f5906f097b297b7c87fc81b6d8d9cc08127f1ff4d9a12fd9cbf97d4f652afdef&w=1060" alt="" />
-              </div>
             </div>
 
             <div className="all_prob_list">
               <ul>
                 {Array.isArray(problems) && problems.length > 0 ? (
                   problems.map((problem) => (
-                    <ShowSingleP
+                    <Link
                       key={problem._id}
-                      prob_id={problem._id}
-                      user_id={userid}
-                      name={problem.name}
-                      description={problem.description}
-                      difficulty={problem.difficulty}
-                      tags={problem.tags}
-                      submissions={"No"}
-                    />
+                      to={`/problems/${problem._id}`}
+                      className="block p-6 bg-white rounded-lg shadow-md hover:shadow-lg transition-shadow"
+                    >
+                      <h2 className="text-xl font-semibold mb-2">{problem.name}</h2>
+                      <p className="text-gray-600 mb-4">{problem.description}</p>
+                      <div className="flex justify-between items-center">
+                        <span className="text-sm text-gray-500">
+                          Difficulty: {problem.difficulty}
+                        </span>
+                        <span className="text-sm text-gray-500">
+                          Category: {problem.tags.join(', ')}
+                        </span>
+                      </div>
+                    </Link>
                   ))
                 ) : (
                   <p>No problems found</p>

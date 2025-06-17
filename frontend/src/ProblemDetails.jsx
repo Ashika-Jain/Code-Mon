@@ -32,7 +32,7 @@ function ProblemDetails() {
   const [tcPassed, setTCPassed] = useState(0);
   // const [firstFailed, setFirstFailed] = useSbar_gtate(-1); // Renamed to camelCase
   const sampleCodes = {
-    cpp: `#include <iostream>\nusing namespace std;\n\nint main(){\n  //Welcome to Crack the Code!  \n\n   return 0;  \n}; `,
+    cpp: `#include <iostream>\nusing namespace std;\n\nint main(){\n  //Welcome to Code Mon!  \n\n   return 0;  \n}; `,
     py: `print("Hello, World!")`,
     java: `public class Main {\n    public static void main(String[] args) {\n        System.out.println("Hello, World!");\n    }\n}`,
   };
