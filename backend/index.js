@@ -6,30 +6,26 @@ require('dotenv').config();
 
 const app = express();
 
-// Manual CORS headers (for preflight, cookies)
-app.use((req, res, next) => {
-  res.header('Access-Control-Allow-Origin', req.headers.origin || '*');
-  res.header('Access-Control-Allow-Credentials', 'true');
-  res.header('Access-Control-Allow-Methods', 'GET,POST,PUT,DELETE,OPTIONS,PATCH');
-  res.header('Access-Control-Allow-Headers', 'Content-Type,Authorization,X-Requested-With,Accept,Origin');
-  res.header('Access-Control-Expose-Headers', 'Content-Range,X-Content-Range');
-
-  if (req.method === 'OPTIONS') {
-    return res.sendStatus(204);
-  }
-
-  next();
-});
-
-// Now apply the CORS middleware
+// CORS configuration
 const corsOptions = {
   origin: ['http://localhost:5173', 'https://code-mon-nine.vercel.app'],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 };
+
+// Apply CORS middleware
 app.use(cors(corsOptions));
+app.options('*', cors(corsOptions)); // Handle preflight
 
 app.use(express.json());
 app.use(cookieParser());
+
+// Test CORS route
+app.options('/test-cors', cors(corsOptions));
+app.get('/test-cors', cors(corsOptions), (req, res) => {
+  res.json({ msg: 'CORS is working' });
+});
 
 // MongoDB connection
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/online-judge', {
