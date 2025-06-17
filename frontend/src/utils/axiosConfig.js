@@ -19,6 +19,8 @@ axiosInstance.interceptors.request.use(
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
+    // Ensure withCredentials is always true
+    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
