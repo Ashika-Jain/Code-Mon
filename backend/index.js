@@ -1,24 +1,27 @@
 const express = require('express');
 const cors = require('cors');
 const mongoose = require('mongoose');
+const cookieParser = require('cookie-parser');
 require('dotenv').config();
 
 const app = express();
 
 // CORS configuration
-app.use(cors({
+const corsOptions = {
   origin: ['http://localhost:5173', 'https://code-mon-nine.vercel.app'],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS', 'PATCH'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With', 'Accept', 'Origin'],
   exposedHeaders: ['Content-Range', 'X-Content-Range'],
   maxAge: 86400 // 24 hours
-}));
+};
 
-// Handle preflight requests
-app.options('*', cors());
+// Apply CORS with the same config for all routes
+app.use(cors(corsOptions));
+app.options('*', cors(corsOptions));
 
 app.use(express.json());
+app.use(cookieParser());
 
 // Connect to MongoDB
 mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/online-judge', {

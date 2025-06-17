@@ -37,15 +37,21 @@ router.post('/register', async (req, res) => {
       }
     };
 
-    jwt.sign(
+    const token = jwt.sign(
       payload,
       process.env.JWT_SECRET || 'your-super-secret-jwt-key-123456789',
-      { expiresIn: '24h' },
-      (err, token) => {
-        if (err) throw err;
-        res.json({ token });
-      }
+      { expiresIn: '24h' }
     );
+
+    // Set cookie
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
+
+    res.json({ token });
   } catch (err) {
     console.error(err.message);
     res.status(500).send('Server error');
@@ -98,6 +104,14 @@ router.post('/login', async (req, res) => {
       process.env.JWT_SECRET || 'your-super-secret-jwt-key-123456789',
       { expiresIn: '24h' }
     );
+
+    // Set cookie
+    res.cookie('jwt', token, {
+      httpOnly: true,
+      secure: process.env.NODE_ENV === 'production',
+      sameSite: 'none',
+      maxAge: 24 * 60 * 60 * 1000 // 24 hours
+    });
 
     // Send response with user data and token
     res.json({
