@@ -6,24 +6,23 @@ require('dotenv').config();
 
 const app = express();
 
-// CORS configuration
-const corsOptions = {
-  origin: ['http://localhost:5173', 'https://code-mon-nine.vercel.app'],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
-};
+// CORS configuration - most liberal for testing
+app.use(cors({
+  origin: true,
+  credentials: true
+}));
 
-// Apply CORS middleware
-app.use(cors(corsOptions));
-app.options('*', cors(corsOptions)); // Handle preflight
+// Handle preflight requests
+app.options('*', cors({
+  origin: true,
+  credentials: true
+}));
 
 app.use(express.json());
 app.use(cookieParser());
 
 // Test CORS route
-app.options('/test-cors', cors(corsOptions));
-app.get('/test-cors', cors(corsOptions), (req, res) => {
+app.get('/test-cors', (req, res) => {
   res.json({ msg: 'CORS is working' });
 });
 

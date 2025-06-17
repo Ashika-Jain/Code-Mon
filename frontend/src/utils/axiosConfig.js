@@ -15,12 +15,13 @@ const axiosInstance = axios.create({
 // Add a request interceptor to include JWT token from localStorage
 axiosInstance.interceptors.request.use(
   (config) => {
+    // Always set withCredentials to true
+    config.withCredentials = true;
+    
     const token = localStorage.getItem('jwt');
     if (token) {
       config.headers['Authorization'] = `Bearer ${token}`;
     }
-    // Ensure withCredentials is always true
-    config.withCredentials = true;
     return config;
   },
   (error) => Promise.reject(error)
