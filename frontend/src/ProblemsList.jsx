@@ -131,34 +131,34 @@ const ProblemsList = () => {
         setProblems(response.data);
         setLoading(false);
 
-        let countBasic = 0;
-        let countEasy = 0;
-        let countMedium = 0;
-        let countHard = 0;
+          let countBasic = 0;
+          let countEasy = 0;
+          let countMedium = 0;
+          let countHard = 0;
 
         response.data.forEach((problem) => {
-          switch (problem.difficulty) {
-            case "basic":
-              countBasic++;
-              break;
-            case "easy":
-              countEasy++;
-              break;
-            case "medium":
-              countMedium++;
-              break;
-            case "hard":
-              countHard++;
-              break;
-            default:
-              break;
-          }
-        });
+            switch (problem.difficulty) {
+              case "basic":
+                countBasic++;
+                break;
+              case "easy":
+                countEasy++;
+                break;
+              case "medium":
+                countMedium++;
+                break;
+              case "hard":
+                countHard++;
+                break;
+              default:
+                break;
+            }
+          });
 
-        setBasicP(countBasic);
-        setEasyP(countEasy);
-        setMediumP(countMedium);
-        setHardP(countHard);
+          setBasicP(countBasic);
+          setEasyP(countEasy);
+          setMediumP(countMedium);
+          setHardP(countHard);
 
         if (response.data.user_id) {
           setUserid(response.data.user_id);

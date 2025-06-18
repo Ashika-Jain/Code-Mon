@@ -96,7 +96,7 @@ const ProblemDetail = () => {
                     });
                 } else {
                     setError('Failed to load problem details');
-                    setLoading(false);
+                setLoading(false);
                 }
             }
         };
@@ -230,54 +230,54 @@ const ProblemDetail = () => {
                     <div className="prose max-w-none">
                         <p className="text-gray-700">{problem?.description}</p>
                     </div>
-                </div>
+            </div>
 
-                <div className="bg-white rounded-lg shadow-md p-6">
-                    <h2 className="text-xl font-semibold mb-4">Submit Solution</h2>
-                    <form onSubmit={handleSubmit}>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 mb-2">Language:</label>
-                            <select
-                                value={language}
-                                onChange={(e) => setLanguage(e.target.value)}
-                                className="w-full p-2 border rounded"
-                            >
-                                <option value="cpp">C++</option>
-                                <option value="java">Java</option>
-                                <option value="python">Python</option>
-                            </select>
-                        </div>
-                        <div className="mb-4">
-                            <label className="block text-gray-700 mb-2">Code:</label>
-                            <textarea
-                                value={code}
-                                onChange={(e) => setCode(e.target.value)}
-                                className="w-full h-64 p-2 border rounded font-mono"
-                                placeholder="Enter your solution here..."
-                            />
-                        </div>
-                        <button
-                            type="submit"
+            <div className="bg-white rounded-lg shadow-md p-6">
+                <h2 className="text-xl font-semibold mb-4">Submit Solution</h2>
+                <form onSubmit={handleSubmit}>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Language:</label>
+                        <select
+                            value={language}
+                            onChange={(e) => setLanguage(e.target.value)}
+                            className="w-full p-2 border rounded"
+                        >
+                            <option value="cpp">C++</option>
+                            <option value="java">Java</option>
+                            <option value="python">Python</option>
+                        </select>
+                    </div>
+                    <div className="mb-4">
+                        <label className="block text-gray-700 mb-2">Code:</label>
+                        <textarea
+                            value={code}
+                            onChange={(e) => setCode(e.target.value)}
+                            className="w-full h-64 p-2 border rounded font-mono"
+                            placeholder="Enter your solution here..."
+                        />
+                    </div>
+                    <button
+                        type="submit"
                             disabled={submissionStatus === 'submitting' || !isAuthenticated}
                             className={`w-full py-2 px-4 rounded-md text-white font-medium ${
                                 submissionStatus === 'submitting' || !isAuthenticated
                                     ? 'bg-gray-400 cursor-not-allowed'
                                     : 'bg-blue-600 hover:bg-blue-700'
                             }`}
-                        >
-                            {submissionStatus === 'submitting' ? 'Submitting...' : 'Submit'}
-                        </button>
-                    </form>
-                    {submissionStatus === 'success' && (
+                    >
+                        {submissionStatus === 'submitting' ? 'Submitting...' : 'Submit'}
+                    </button>
+                </form>
+                {submissionStatus === 'success' && (
                         <div className="mt-4 p-4 bg-green-100 text-green-700 rounded-md">
                             Solution submitted successfully!
                         </div>
-                    )}
+                )}
                     {submissionError && (
                         <div className="mt-4 p-4 bg-red-100 text-red-700 rounded-md">
                             {submissionError}
                         </div>
-                    )}
+                )}
                 </div>
             </div>
         </div>

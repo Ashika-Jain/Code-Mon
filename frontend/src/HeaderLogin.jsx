@@ -49,17 +49,17 @@ function Header() {
       }
 
       if (response.data.role === "admin") {
-        swal({
+          swal({
           text: "You are navigating as an admin! Do you want to continue?"
         }).then(() => {
-          navigate("/problems_post");
-        });
+            navigate("/problems_post");
+          });
       } else {
-        swal({
-          title: "ADMIN ONLY!",
-          text: "Only Admin can contribute!",
-          icon: "error",
-        });
+          swal({
+            title: "ADMIN ONLY!",
+            text: "Only Admin can contribute!",
+            icon: "error",
+          });
       }
     } catch (error) {
       console.error("Error verifying user:", error);
@@ -73,7 +73,7 @@ function Header() {
 
   return (
     <div className="headerf">
-      <img className="logo_banner" src={Logo} alt="NOT FOUND" />
+        <img className="logo_banner" src={Logo} alt="NOT FOUND" />
       <div className="auth-buttons">
         <button className="contribute" onClick={go_to_contributionPage}>
           Contribute
@@ -81,17 +81,17 @@ function Header() {
 
         {!isLoggedIn ? (
           <>
-            <button className="login-button">
-              <Link to="/signup">SignUp</Link>
-            </button>
+        <button className="login-button">
+          <Link to="/signup">SignUp</Link>
+        </button>
             <button className="signup-button">
               <Link to="/login">Login</Link>
             </button>
           </>
         ) : (
           <button className="logout-button" onClick={logout}>
-            Logout
-          </button>
+          Logout
+        </button>
         )}
       </div>
     </div>

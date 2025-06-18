@@ -6,17 +6,17 @@ import './LoginSignup.css';
 const API_BASE_URL = import.meta.env.VITE_API_BASE_URL?.replace(/\/$/, '') || 'http://localhost:5001';
 
 const SLoginSignup = () => {
-    const [email, setEmail] = useState('');
-    const [password, setPassword] = useState('');
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
-    const navigate = useNavigate();
+  const navigate = useNavigate();
     const location = useLocation();
 
     console.log('Login Component: Current location state:', location.state);
 
-    const handleSubmit = async (e) => {
-        e.preventDefault();
+  const handleSubmit = async (e) => {
+    e.preventDefault();
         setError('');
         setLoading(true);
 
@@ -41,14 +41,14 @@ const SLoginSignup = () => {
                 status: response.status,
                 data: response.data,
                 headers: response.headers
-            });
+      });
 
-            if (response.data.token) {
+      if (response.data.token) {
                 console.log('5. Token received, storing auth data');
                 
                 // Store token in localStorage
-                localStorage.setItem('jwt', response.data.token);
-                localStorage.setItem('user', JSON.stringify(response.data.user));
+        localStorage.setItem('jwt', response.data.token);
+        localStorage.setItem('user', JSON.stringify(response.data.user));
                 console.log('6. Stored in localStorage:', {
                     jwt: localStorage.getItem('jwt') ? 'Present' : 'Not present',
                     user: localStorage.getItem('user') ? 'Present' : 'Not present'
@@ -66,7 +66,7 @@ const SLoginSignup = () => {
                 setTimeout(() => {
                     navigate(from, { replace: true });
                 }, 100);
-            } else {
+      } else {
                 console.log('5. No token in response');
                 setError('Login failed. Please try again.');
             }
@@ -81,15 +81,15 @@ const SLoginSignup = () => {
             setError(err.response?.data?.message || 'Login failed. Please try again.');
         } finally {
             setLoading(false);
-        }
-    };
+    }
+  };
 
     const navigate_to_signup = () => {
         console.log('Navigating to signup page');
-        navigate('/signup');
+    navigate('/signup');
     };
 
-    return (
+  return (
         <div className="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8">
             <div className="max-w-md w-full space-y-8">
                 <div>
@@ -101,26 +101,26 @@ const SLoginSignup = () => {
                     <div className="rounded-md shadow-sm -space-y-px">
                         <div>
                             <label htmlFor="email" className="sr-only">Email address</label>
-                            <input
+          <input
                                 id="email"
                                 name="email"
-                                type="email"
+            type="email"
                                 required
                                 value={email}
-                                onChange={(e) => setEmail(e.target.value)}
+            onChange={(e) => setEmail(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-t-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Email address"
                             />
                         </div>
                         <div>
                             <label htmlFor="password" className="sr-only">Password</label>
-                            <input
+          <input
                                 id="password"
                                 name="password"
-                                type="password"
+            type="password"
                                 required
                                 value={password}
-                                onChange={(e) => setPassword(e.target.value)}
+            onChange={(e) => setPassword(e.target.value)}
                                 className="appearance-none rounded-none relative block w-full px-3 py-2 border border-gray-300 placeholder-gray-500 text-gray-900 rounded-b-md focus:outline-none focus:ring-blue-500 focus:border-blue-500 focus:z-10 sm:text-sm"
                                 placeholder="Password"
                             />
@@ -145,8 +145,8 @@ const SLoginSignup = () => {
                         >
                             {loading ? 'Signing in...' : 'Sign in'}
                         </button>
-                    </div>
-                </form>
+        </div>
+      </form>
 
                 <div className="text-center">
                     <p className="text-sm text-gray-600">
@@ -160,8 +160,8 @@ const SLoginSignup = () => {
                     </p>
                 </div>
             </div>
-        </div>
-    );
+    </div>
+  );
 };
 
 export default SLoginSignup;

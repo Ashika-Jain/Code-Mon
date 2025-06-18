@@ -25,8 +25,8 @@ const ProtectedRoute = ({ children }) => {
         console.log('\n2. Checking Cookies:');
         console.log('- All cookies:', document.cookie);
         
-        const token = localStorage.getItem('jwt');
-        if (!token) {
+      const token = localStorage.getItem('jwt');
+      if (!token) {
           console.log('\n3. No token found in localStorage');
           if (isMounted) {
             setAuthState({
@@ -34,8 +34,8 @@ const ProtectedRoute = ({ children }) => {
               isLoading: false
             });
           }
-          return;
-        }
+        return;
+      }
 
         console.log('\n3. Token found, verifying with backend');
         console.log('- Making request to:', `${API_BASE_URL}/api/auth/verify`);
@@ -55,21 +55,21 @@ const ProtectedRoute = ({ children }) => {
         console.log('- Headers:', response.headers);
 
         if (isMounted) {
-          if (response.data.valid) {
+        if (response.data.valid) {
             console.log('\n5. Token is valid, allowing access');
             setAuthState({
               isAuthenticated: true,
               isLoading: false
             });
-          } else {
+        } else {
             console.log('\n5. Token is invalid, clearing auth data');
             setAuthState({
               isAuthenticated: false,
               isLoading: false
             });
             // Clear auth data
-            localStorage.removeItem('jwt');
-            localStorage.removeItem('user');
+          localStorage.removeItem('jwt');
+          localStorage.removeItem('user');
             document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
             
@@ -91,8 +91,8 @@ const ProtectedRoute = ({ children }) => {
             isLoading: false
           });
           // Clear auth data
-          localStorage.removeItem('jwt');
-          localStorage.removeItem('user');
+        localStorage.removeItem('jwt');
+        localStorage.removeItem('user');
           document.cookie = 'jwt=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
           document.cookie = 'user=; expires=Thu, 01 Jan 1970 00:00:00 UTC; path=/;';
           

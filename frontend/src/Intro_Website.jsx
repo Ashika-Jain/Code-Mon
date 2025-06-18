@@ -21,7 +21,7 @@ function Intro_Website() {
               <br />
               <h1>Welcome to <span>Code Mon</span>, where coding challenges transform into solutions! Whether you're a seasoned developer honing your skills or a beginner taking your first steps into the world of coding, we have something for everyone.</h1>
               <button className="solverButton">
-                <div onClick={go_to_prob_list}>Start Solving</div>
+              <div onClick={go_to_prob_list}>Start Solving</div>
               </button>
             </div>
           </div>
